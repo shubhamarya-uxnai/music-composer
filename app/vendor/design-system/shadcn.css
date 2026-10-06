@@ -1,0 +1,45 @@
+/* shadcn and Gradient Creator compatibility names (plan section 7). No ds- prefix, on purpose: these
+ * are the names shadcn components and Gradient Creator already read. Each one points at a component
+ * token (or, for chart-5 only, straight at the semantic layer, since no component token exists yet: D6).
+ */
+:root, :host, [data-theme], .dark, .light, [data-contrast], [data-temperature], [data-text-scale], [data-screen], [lang] {
+  --background: var(--ds-color-background-page);
+  --foreground: var(--ds-color-information-primary);
+  --card: var(--ds-color-background-card);
+  --card-foreground: var(--ds-color-information-primary);
+  --popover: var(--ds-color-layer-layer-2);
+  --popover-foreground: var(--ds-color-information-primary);
+  --primary: var(--ds-color-button-primary-fill-fill);
+  --primary-foreground: var(--ds-color-button-primary-fill-text);
+  --secondary: var(--ds-color-layer-layer-2);
+  --secondary-foreground: var(--ds-color-information-primary);
+  --muted: var(--ds-color-layer-layer-2);
+  --muted-foreground: var(--ds-color-information-secondary);
+  --accent: var(--ds-color-button-neutral-ghost-fill-hover);
+  --accent-foreground: var(--ds-color-information-primary);
+  --destructive: var(--ds-color-status-error);
+  --destructive-foreground: var(--ds-color-chip-error-fill-text);
+  --border: var(--ds-color-border-subtle);
+  --input: var(--ds-color-input-field-border);
+  --ring: var(--ds-color-border-focus);
+  --chart-1: var(--ds-color-chart-primary);
+  --chart-2: var(--ds-color-chart-secondary);
+  --chart-3: var(--ds-color-chart-tertiary);
+  --chart-4: var(--ds-color-chart-accent);
+  --sidebar: var(--ds-color-sidebar-background);
+  --sidebar-foreground: var(--ds-color-sidebar-tab-inactive-text);
+  --sidebar-primary: var(--ds-color-button-primary-fill-fill);
+  --sidebar-primary-foreground: var(--ds-color-button-primary-fill-text);
+  --sidebar-accent: var(--ds-color-sidebar-tab-active);
+  --sidebar-accent-foreground: var(--ds-color-sidebar-tab-active-text);
+  --sidebar-border: var(--ds-color-border-subtle);
+  --sidebar-ring: var(--ds-color-border-focus);
+  --radius: var(--ds-buttons-large-spacing-border-radius);
+  --subtle-foreground: var(--ds-color-information-muted);
+  --highlight: var(--ds-color-sidebar-promo-gradient-end);
+  --success: var(--ds-color-status-success);
+  --warning: var(--ds-color-status-warning);
+  --primary-hover: var(--ds-color-button-primary-fill-fill-hover);
+  --font-sans: var(--ds-text-body-font-family);
+  --chart-5: var(--ds-when-light, var(--ds-semantic-onlight-chart-5)) var(--ds-when-dark, var(--ds-semantic-ondark-chart-5));
+}

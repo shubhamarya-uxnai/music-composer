@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acoustic Matrix</title>
+  <link rel="stylesheet" href="vendor/design-system/tokens.css">
+  <link rel="stylesheet" href="vendor/design-system/type.css">
+  <link rel="stylesheet" href="vendor/design-system/components.css">
+  <link rel="stylesheet" href="vendor/design-system/shadcn.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="topbar" aria-label="Song analysis setup">
+      <div class="brand-block">
+        <p class="ds-type-label-caption eyebrow">Acoustic Matrix V0</p>
+        <h1 class="ds-type-page-title">Song to 3D Map</h1>
+      </div>
+
+      <div class="source-controls">
+        <label class="upload-control">
+          <input id="audio-file" type="file" accept="audio/*">
+          <span class="ds-button upload-button" data-size="large" data-type="primary" data-fill="on">Upload audio</span>
+        </label>
+        <label class="link-field">
+          <span class="ds-type-label-micro">Link import contract</span>
+          <input id="source-link" type="url" placeholder="Paste a public audio/video URL">
+        </label>
+        <button id="mock-link" class="ds-button link-check-button" data-size="large" data-type="neutral" data-fill="off">
+          <span id="link-spinner" class="button-spinner" aria-hidden="true"></span>
+          <span id="link-button-label">Check link</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="matrix-layout">
+      <aside class="side-panel" aria-label="Analysis details">
+        <div class="panel-section status-panel">
+          <p class="ds-type-label-caption">Current source</p>
+          <h2 id="track-name" class="ds-type-section-title">No song loaded</h2>
+          <p id="status-text" class="ds-type-body-small">Upload an MP3, WAV, M4A, or FLAC file. The browser will decode it locally and build the first acoustic map.</p>
+        </div>
+
+        <div class="panel-section audio-panel">
+          <p class="ds-type-label-caption">Listen</p>
+          <audio id="audio-player" controls preload="metadata"></audio>
+          <p id="audio-status" class="ds-type-body-small">Audio controls appear after upload.</p>
+        </div>
+
+        <div class="metrics-grid" aria-label="Analysis metrics">
+          <div class="metric">
+            <span class="ds-type-label-micro">BPM</span>
+            <strong id="metric-bpm" class="ds-type-data-metric-secondary">--</strong>
+          </div>
+          <div class="metric">
+            <span class="ds-type-label-micro">Duration</span>
+            <strong id="metric-duration" class="ds-type-data-metric-secondary">--</strong>
+          </div>
+          <div class="metric">
+            <span class="ds-type-label-micro">Beat slab</span>
+            <strong id="metric-beat" class="ds-type-data-metric-secondary">--</strong>
+          </div>
+          <div class="metric">
+            <span class="ds-type-label-micro">Points</span>
+            <strong id="metric-points" class="ds-type-data-metric-secondary">--</strong>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="ds-type-label-caption">Map rules</p>
+          <dl class="axis-list">
+            <div><dt>X</dt><dd>Time, 0s to song end</dd></div>
+            <div><dt>Z</dt><dd>Frequency, 20Hz to 20kHz, log scale around 440Hz</dd></div>
+            <div><dt>Y</dt><dd>Amplitude, normalized dB energy</dd></div>
+          </dl>
+        </div>
+
+        <div class="panel-section scale-panel">
+          <p class="ds-type-label-caption">Scales</p>
+          <label>
+            <span class="ds-type-label-micro">Frequency</span>
+            <select id="frequency-scale">
+              <option value="log">Log2 around 440Hz</option>
+              <option value="ln">Natural log</option>
+              <option value="linear">Linear</option>
+            </select>
+          </label>
+          <label>
+            <span class="ds-type-label-micro">Amplitude</span>
+            <select id="amplitude-scale">
+              <option value="db">dB perceptual</option>
+              <option value="ln">Natural log</option>
+              <option value="linear">Linear</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="panel-section pipeline">
+          <p class="ds-type-label-caption">Backend plug-in plan</p>
+          <ol>
+            <li><strong>yt-dlp + FFmpeg</strong> for link extraction, verification, and clean WAV normalization.</li>
+            <li><strong>librosa</strong> for production BPM, beat grid, STFT/CQT, and persisted map JSON.</li>
+          </ol>
+        </div>
+      </aside>
+
+      <section class="viewer-panel" aria-label="3D acoustic map">
+        <div class="viewer-toolbar">
+          <div>
+            <p id="viewer-mode-label" class="ds-type-label-caption">3D acoustic space</p>
+            <p id="viewer-subtitle" class="ds-type-body-small">Demo field shown until audio is loaded.</p>
+          </div>
+          <div class="view-controls">
+            <div class="view-switcher" aria-label="View mode">
+              <button class="view-mode-button" type="button" data-mode="3d" data-active="true">3D</button>
+              <button class="view-mode-button" type="button" data-mode="amplitude">2D Amp</button>
+              <button class="view-mode-button" type="button" data-mode="frequency">2D Freq</button>
+            </div>
+            <button id="reset-view" class="ds-icon-button" data-size="large" data-type="neutral" data-fill="off" title="Reset view" aria-label="Reset view">↻</button>
+            <button id="toggle-motion" class="ds-icon-button" data-size="large" data-type="neutral" data-fill="off" title="Toggle motion" aria-label="Toggle motion">▶</button>
+          </div>
+        </div>
+        <div class="timeline-toolbar" aria-label="Timeline zoom">
+          <label>
+            <span class="ds-type-label-micro">Timeline scale</span>
+            <input id="timeline-zoom" type="range" min="1" max="8" step="0.1" value="1">
+          </label>
+          <span id="timeline-zoom-value" class="ds-type-label-micro">1.0x</span>
+          <label>
+            <span class="ds-type-label-micro">Timeline position</span>
+            <input id="timeline-pan" type="range" min="0" max="0" step="0.001" value="0">
+          </label>
+          <label>
+            <span class="ds-type-label-micro">Render</span>
+            <select id="render-style">
+              <option value="points">Points</option>
+              <option value="surface">Continuous plane</option>
+              <option value="hybrid">Plane + points</option>
+            </select>
+          </label>
+          <label>
+            <span class="ds-type-label-micro">Base</span>
+            <input id="base-color" type="color" value="#4b5563">
+          </label>
+          <label>
+            <span class="ds-type-label-micro">Active</span>
+            <input id="active-color" type="color" value="#68d6b9">
+          </label>
+        </div>
+        <canvas id="matrix-canvas" width="1280" height="820"></canvas>
+        <div class="legend" aria-label="Map legend">
+          <span>Quiet</span>
+          <div class="legend-ramp"></div>
+          <span>Loud</span>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
