@@ -1,31 +1,29 @@
-<!doctype html>
-<html lang="en" data-theme="dark">
-<head>
+<!DOCTYPE html><html lang="en" data-theme="dark"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Acoustic Matrix</title>
   <link rel="stylesheet" href="app/styles.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/shubhamarya-uxnai/BA-Design-Sytem@v0.1.2/dist/consumer.css" data-ba-version="0.1.2">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Material+Symbols+Rounded&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/shubhamarya-uxnai/BA-Design-Sytem@v0.2.0/dist/consumer.css" data-ba-version="0.2.0">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&amp;family=Material+Symbols+Rounded&amp;display=swap">
 </head>
-<body>
+<body data-ba-component="Page">
   <main class="app-shell">
-    <section class="topbar" aria-label="Song analysis setup">
+    <section class="topbar" aria-label="Song analysis setup" data-ba-component="Topbar">
       <div class="brand-block">
         <p class="ds-type-label-caption eyebrow">Acoustic Matrix V0</p>
-        <h1 class="ds-type-page-title">Song to 3D Map</h1>
+        <h1 class="ds-type-page-title" data-ba-component="Display">Song to 3D Map</h1>
       </div>
 
       <div class="source-controls">
         <label class="upload-control">
           <input id="audio-file" type="file" accept="audio/*">
-          <span class="ds-button upload-button" data-size="large" data-type="primary" data-fill="on">Upload audio</span>
+          <span class="ds-button upload-button" data-size="large" data-type="primary" data-fill="on" data-ba-component="Button" data-ba-variant="filled" data-ba-tone="primary" data-ba-size="large">Upload audio</span>
         </label>
         <label class="link-field">
           <span class="ds-type-label-micro">Link import contract</span>
-          <input id="source-link" type="url" placeholder="Paste a public audio/video URL">
+          <input id="source-link" type="url" placeholder="Paste a public audio/video URL" data-ba-component="InputField">
         </label>
-        <button id="mock-link" class="ds-button link-check-button" data-size="large" data-type="neutral" data-fill="off">
+        <button id="mock-link" class="ds-button link-check-button" data-size="large" data-type="neutral" data-fill="off" data-ba-component="Button" data-ba-variant="ghost" data-ba-tone="neutral" data-ba-size="large">
           <span id="link-spinner" class="button-spinner" aria-hidden="true"></span>
           <span id="link-button-label">Check link</span>
         </button>
@@ -33,16 +31,16 @@
     </section>
 
     <section class="matrix-layout">
-      <aside class="side-panel" aria-label="Analysis details">
-        <div class="panel-section status-panel">
+      <aside class="side-panel" aria-label="Analysis details" data-ba-component="Sidebar">
+        <div class="panel-section status-panel" data-ba-component="Surface" data-ba-surface="default">
           <p class="ds-type-label-caption">Current source</p>
           <h2 id="track-name" class="ds-type-section-title">No song loaded</h2>
           <p id="status-text" class="ds-type-body-small">Upload an MP3, WAV, M4A, or FLAC file. The browser will decode it locally and build the first acoustic map.</p>
         </div>
 
-        <div class="panel-section audio-panel">
+        <div class="panel-section audio-panel" data-ba-component="Surface" data-ba-surface="default">
           <p class="ds-type-label-caption">Listen</p>
-          <audio id="audio-player" controls preload="metadata"></audio>
+          <audio id="audio-player" controls="" preload="metadata"></audio>
           <p id="audio-status" class="ds-type-body-small">Audio controls appear after upload.</p>
         </div>
 
@@ -65,7 +63,7 @@
           </div>
         </div>
 
-        <div class="panel-section">
+        <div class="panel-section" data-ba-component="Surface" data-ba-surface="default">
           <p class="ds-type-label-caption">Map rules</p>
           <dl class="axis-list">
             <div><dt>X</dt><dd>Time, 0s to song end</dd></div>
@@ -74,11 +72,11 @@
           </dl>
         </div>
 
-        <div class="panel-section scale-panel">
+        <div class="panel-section scale-panel" data-ba-component="Surface" data-ba-surface="default">
           <p class="ds-type-label-caption">Scales</p>
           <label>
             <span class="ds-type-label-micro">Frequency</span>
-            <select id="frequency-scale">
+            <select id="frequency-scale" data-ba-component="InputField">
               <option value="log">Log2 around 440Hz</option>
               <option value="ln">Natural log</option>
               <option value="linear">Linear</option>
@@ -86,7 +84,7 @@
           </label>
           <label>
             <span class="ds-type-label-micro">Amplitude</span>
-            <select id="amplitude-scale">
+            <select id="amplitude-scale" data-ba-component="InputField">
               <option value="db">dB perceptual</option>
               <option value="ln">Natural log</option>
               <option value="linear">Linear</option>
@@ -94,7 +92,7 @@
           </label>
         </div>
 
-        <div class="panel-section pipeline">
+        <div class="panel-section pipeline" data-ba-component="Surface" data-ba-surface="default">
           <p class="ds-type-label-caption">Backend plug-in plan</p>
           <ol>
             <li><strong>yt-dlp + FFmpeg</strong> for link extraction, verification, and clean WAV normalization.</li>
@@ -103,20 +101,20 @@
         </div>
       </aside>
 
-      <section class="viewer-panel" aria-label="3D acoustic map">
-        <div class="viewer-toolbar">
+      <section class="viewer-panel" aria-label="3D acoustic map" data-ba-component="Surface" data-ba-surface="default">
+        <div class="viewer-toolbar" data-ba-component="Topbar">
           <div>
             <p id="viewer-mode-label" class="ds-type-label-caption">3D acoustic space</p>
             <p id="viewer-subtitle" class="ds-type-body-small">Demo field shown until audio is loaded.</p>
           </div>
           <div class="view-controls">
             <div class="view-switcher" aria-label="View mode">
-              <button class="view-mode-button" type="button" data-mode="3d" data-active="true">3D</button>
-              <button class="view-mode-button" type="button" data-mode="amplitude">2D Amp</button>
-              <button class="view-mode-button" type="button" data-mode="frequency">2D Freq</button>
+              <button class="view-mode-button" type="button" data-mode="3d" data-active="true" data-ba-component="Button" data-ba-variant="ghost" data-ba-tone="neutral" data-ba-size="small">3D</button>
+              <button class="view-mode-button" type="button" data-mode="amplitude" data-ba-component="Button" data-ba-variant="ghost" data-ba-tone="neutral" data-ba-size="small">2D Amp</button>
+              <button class="view-mode-button" type="button" data-mode="frequency" data-ba-component="Button" data-ba-variant="ghost" data-ba-tone="neutral" data-ba-size="small">2D Freq</button>
             </div>
-            <button id="reset-view" class="ds-icon-button" data-size="large" data-type="neutral" data-fill="off" title="Reset view" aria-label="Reset view">↻</button>
-            <button id="toggle-motion" class="ds-icon-button" data-size="large" data-type="neutral" data-fill="off" title="Toggle motion" aria-label="Toggle motion">▶</button>
+            <button id="reset-view" class="ds-icon-button" data-size="large" data-type="neutral" data-fill="off" title="Reset view" aria-label="Reset view" data-ba-component="IconButton" data-ba-variant="ghost" data-ba-tone="neutral" data-ba-size="large">↻</button>
+            <button id="toggle-motion" class="ds-icon-button" data-size="large" data-type="neutral" data-fill="off" title="Toggle motion" aria-label="Toggle motion" data-ba-component="IconButton" data-ba-variant="ghost" data-ba-tone="neutral" data-ba-size="large">▶</button>
           </div>
         </div>
         <div class="timeline-toolbar" aria-label="Timeline zoom">
@@ -131,7 +129,7 @@
           </label>
           <label>
             <span class="ds-type-label-micro">Render</span>
-            <select id="render-style">
+            <select id="render-style" data-ba-component="InputField">
               <option value="points">Points</option>
               <option value="surface">Continuous plane</option>
               <option value="hybrid">Plane + points</option>
@@ -157,5 +155,7 @@
   </main>
 
   <script src="app/app.js"></script>
-</body>
-</html>
+
+
+<script type="module" src="https://cdn.jsdelivr.net/gh/shubhamarya-uxnai/BA-Design-Sytem@v0.2.0/dist/adopt.mjs"></script>
+</body></html>

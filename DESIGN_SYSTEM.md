@@ -1,9 +1,9 @@
-# Shared BA Design System
+# BA Design System v0.2.0
 
-This app loads BA Design System **v0.1.2** remotely:
+Shared CSS and React component adoption runtime load from the BA repository through pinned CDN URLs in index.html. No design-system implementation or folder belongs in this project.
 
-https://cdn.jsdelivr.net/gh/shubhamarya-uxnai/BA-Design-Sytem@v0.1.2/dist/consumer.css
+Page uses background/neutral/page; Sidebar, Topbar and Surface use background/neutral/default. Buttons declare explicit variants, tones and sizes; ghost borders follow currentColor. Main product headings use Display (The Seasons).
 
-Canonical repository: https://github.com/shubhamarya-uxnai/BA-Design-Sytem
+Existing tool behavior and DOM listeners are retained by the central React adapter. New React views can use createReactComponents(React) from BA dist/browser-components.mjs; both paths use the same component attributes and CSS. The tools themselves remain HTML/JavaScript applications during this transition.
 
-Application layout and behavior stay here. Shared tokens, component CSS, typography, and compatibility aliases are maintained centrally. Update the pinned version in index.html to adopt a new release. Revert that commit to roll back.
+Canonical source: https://github.com/shubhamarya-uxnai/BA-Design-Sytem/tree/v0.2.0
