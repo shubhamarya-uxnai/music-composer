@@ -1,8 +1,8 @@
 # Shared BA Design System
 
-This app loads BA Design System **v0.1.1** remotely:
+This app loads BA Design System **v0.1.2** remotely:
 
-https://cdn.jsdelivr.net/gh/shubhamarya-uxnai/BA-Design-Sytem@v0.1.1/dist/consumer.css
+https://cdn.jsdelivr.net/gh/shubhamarya-uxnai/BA-Design-Sytem@v0.1.2/dist/consumer.css
 
 Canonical repository: https://github.com/shubhamarya-uxnai/BA-Design-Sytem
 
