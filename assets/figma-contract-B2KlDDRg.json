@@ -1,0 +1,1062 @@
+{
+  "button": {
+    "source": {
+      "id": "4149:6078",
+      "name": "Buttons",
+      "propertyDefinitions": {
+        "leading-icon#322:0": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "4149:6634",
+          "preferredValues": []
+        },
+        "tailing-icon#322:13": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "4149:6784",
+          "preferredValues": []
+        },
+        "Tailing Icon#322:26": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Leading Icon#322:39": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Button#322:52": {
+          "type": "TEXT",
+          "defaultValue": "Button"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "defaultValue": "Primary",
+          "variantOptions": [
+            "Primary",
+            "Default",
+            "Ghost"
+          ]
+        },
+        "Hover": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Enabled": {
+          "type": "VARIANT",
+          "defaultValue": "True",
+          "variantOptions": [
+            "True",
+            "False"
+          ]
+        },
+        "Pressed": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Size": {
+          "type": "VARIANT",
+          "defaultValue": "Large",
+          "variantOptions": [
+            "Large",
+            "Small"
+          ]
+        }
+      }
+    },
+    "variants": [
+      {
+        "id": "4149:6079",
+        "name": "Type=Primary, Hover=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": true
+      },
+      {
+        "id": "4149:6084",
+        "name": "Type=Default, Hover=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": true
+      },
+      {
+        "id": "4149:6089",
+        "name": "Type=Ghost, Hover=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": true
+      },
+      {
+        "id": "4149:6094",
+        "name": "Type=Primary, Hover=True, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6099",
+        "name": "Type=Default, Hover=True, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6104",
+        "name": "Type=Ghost, Hover=True, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6109",
+        "name": "Type=Primary, Hover=True, Enabled=True, Pressed=True, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6114",
+        "name": "Type=Default, Hover=True, Enabled=True, Pressed=True, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6119",
+        "name": "Type=Ghost, Hover=True, Enabled=True, Pressed=True, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6124",
+        "name": "Type=Primary, Hover=False, Enabled=False, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6128",
+        "name": "Type=Default, Hover=False, Enabled=False, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6132",
+        "name": "Type=Ghost, Hover=False, Enabled=False, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 123,
+        "height": 40,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7224",
+        "name": "Type=Primary, Hover=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7229",
+        "name": "Type=Default, Hover=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7234",
+        "name": "Type=Ghost, Hover=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7239",
+        "name": "Type=Primary, Hover=True, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7244",
+        "name": "Type=Default, Hover=True, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7249",
+        "name": "Type=Ghost, Hover=True, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7254",
+        "name": "Type=Primary, Hover=True, Enabled=True, Pressed=True, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7259",
+        "name": "Type=Default, Hover=True, Enabled=True, Pressed=True, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7264",
+        "name": "Type=Ghost, Hover=True, Enabled=True, Pressed=True, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7269",
+        "name": "Type=Primary, Hover=False, Enabled=False, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7273",
+        "name": "Type=Default, Hover=False, Enabled=False, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7277",
+        "name": "Type=Ghost, Hover=False, Enabled=False, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 94,
+        "height": 25,
+        "focusRing": false
+      }
+    ]
+  },
+  "iconButton": {
+    "source": {
+      "id": "4149:6136",
+      "name": "Icon Button",
+      "propertyDefinitions": {
+        "icon#322:13": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "4149:6859",
+          "preferredValues": []
+        },
+        "Icon#322:26": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Focus#2098:11": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Type": {
+          "type": "VARIANT",
+          "defaultValue": "Primary",
+          "variantOptions": [
+            "Primary",
+            "Default",
+            "Ghost"
+          ]
+        },
+        "Hover": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Inverse": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False"
+          ]
+        },
+        "Enabled": {
+          "type": "VARIANT",
+          "defaultValue": "True",
+          "variantOptions": [
+            "True",
+            "False"
+          ]
+        },
+        "Pressed": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Size": {
+          "type": "VARIANT",
+          "defaultValue": "Large",
+          "variantOptions": [
+            "Large",
+            "Small"
+          ]
+        }
+      }
+    },
+    "variants": [
+      {
+        "id": "4149:6137",
+        "name": "Type=Primary, Hover=False, Inverse=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7386",
+        "name": "Type=Primary, Hover=False, Inverse=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": true
+      },
+      {
+        "id": "4149:6140",
+        "name": "Type=Default, Hover=False, Inverse=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7389",
+        "name": "Type=Default, Hover=False, Inverse=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": true
+      },
+      {
+        "id": "4149:6143",
+        "name": "Type=Ghost, Hover=False, Inverse=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7392",
+        "name": "Type=Ghost, Hover=False, Inverse=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": true
+      },
+      {
+        "id": "4149:6146",
+        "name": "Type=Primary, Hover=True, Inverse=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7395",
+        "name": "Type=Primary, Hover=True, Inverse=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6149",
+        "name": "Type=Default, Hover=True, Inverse=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7398",
+        "name": "Type=Default, Hover=True, Inverse=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6152",
+        "name": "Type=Ghost, Hover=True, Inverse=False, Enabled=True, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7401",
+        "name": "Type=Ghost, Hover=True, Inverse=False, Enabled=True, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6155",
+        "name": "Type=Primary, Hover=True, Inverse=False, Enabled=True, Pressed=True, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7404",
+        "name": "Type=Primary, Hover=True, Inverse=False, Enabled=True, Pressed=True, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6158",
+        "name": "Type=Default, Hover=True, Inverse=False, Enabled=True, Pressed=True, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7407",
+        "name": "Type=Default, Hover=True, Inverse=False, Enabled=True, Pressed=True, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6161",
+        "name": "Type=Ghost, Hover=True, Inverse=False, Enabled=True, Pressed=True, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7410",
+        "name": "Type=Ghost, Hover=True, Inverse=False, Enabled=True, Pressed=True, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "True",
+          "Inverse": "False",
+          "Enabled": "True",
+          "Pressed": "True",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6164",
+        "name": "Type=Primary, Hover=False, Inverse=False, Enabled=False, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7413",
+        "name": "Type=Primary, Hover=False, Inverse=False, Enabled=False, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Primary",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6166",
+        "name": "Type=Default, Hover=False, Inverse=False, Enabled=False, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7415",
+        "name": "Type=Default, Hover=False, Inverse=False, Enabled=False, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Default",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      },
+      {
+        "id": "4149:6168",
+        "name": "Type=Ghost, Hover=False, Inverse=False, Enabled=False, Pressed=False, Size=Large",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Large"
+        },
+        "width": 36,
+        "height": 36,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7417",
+        "name": "Type=Ghost, Hover=False, Inverse=False, Enabled=False, Pressed=False, Size=Small",
+        "properties": {
+          "Type": "Ghost",
+          "Hover": "False",
+          "Inverse": "False",
+          "Enabled": "False",
+          "Pressed": "False",
+          "Size": "Small"
+        },
+        "width": 24,
+        "height": 24,
+        "focusRing": false
+      }
+    ]
+  },
+  "input": {
+    "source": {
+      "id": "4158:7549",
+      "name": "Input Field",
+      "propertyDefinitions": {
+        "label#160:11": {
+          "type": "TEXT",
+          "defaultValue": "Label"
+        },
+        "Label#160:22": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "leading-icon#329:74": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "4158:7445",
+          "preferredValues": [
+            {
+              "type": "COMPONENT_SET",
+              "key": "a9bdc3ddda4e6091eede4208b8560b5b8c459eff"
+            }
+          ]
+        },
+        "Leading Icon#329:85": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "tailing-icon#329:96": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "4158:7448",
+          "preferredValues": [
+            {
+              "type": "COMPONENT_SET",
+              "key": "a9bdc3ddda4e6091eede4208b8560b5b8c459eff"
+            }
+          ]
+        },
+        "Tailing Icon#329:107": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "input#329:118": {
+          "type": "TEXT",
+          "defaultValue": "Placeholder"
+        },
+        "Button#4158:0": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "button#4158:18": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "4158:7224",
+          "preferredValues": [
+            {
+              "type": "COMPONENT_SET",
+              "key": "eb4af83ef07c57e8821de585f0dc93a5589457f4"
+            }
+          ]
+        },
+        "Focus Ring#4158:27": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Hover": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Typing": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Error": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Typed": {
+          "type": "VARIANT",
+          "defaultValue": "False",
+          "variantOptions": [
+            "False",
+            "True"
+          ]
+        },
+        "Active": {
+          "type": "VARIANT",
+          "defaultValue": "True",
+          "variantOptions": [
+            "True",
+            "False"
+          ]
+        }
+      }
+    },
+    "variants": [
+      {
+        "id": "4158:7550",
+        "name": "Hover=False, Typing=False, Error=False, Typed=False, Active=True",
+        "properties": {
+          "Hover": "False",
+          "Typing": "False",
+          "Error": "False",
+          "Typed": "False",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": true
+      },
+      {
+        "id": "4158:7557",
+        "name": "Hover=True, Typing=False, Error=False, Typed=False, Active=True",
+        "properties": {
+          "Hover": "True",
+          "Typing": "False",
+          "Error": "False",
+          "Typed": "False",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7564",
+        "name": "Hover=False, Typing=False, Error=True, Typed=False, Active=True",
+        "properties": {
+          "Hover": "False",
+          "Typing": "False",
+          "Error": "True",
+          "Typed": "False",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7570",
+        "name": "Hover=False, Typing=False, Error=False, Typed=False, Active=False",
+        "properties": {
+          "Hover": "False",
+          "Typing": "False",
+          "Error": "False",
+          "Typed": "False",
+          "Active": "False"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7576",
+        "name": "Hover=False, Typing=True, Error=False, Typed=False, Active=True",
+        "properties": {
+          "Hover": "False",
+          "Typing": "True",
+          "Error": "False",
+          "Typed": "False",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7582",
+        "name": "Hover=True, Typing=True, Error=False, Typed=False, Active=True",
+        "properties": {
+          "Hover": "True",
+          "Typing": "True",
+          "Error": "False",
+          "Typed": "False",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7589",
+        "name": "Hover=False, Typing=True, Error=False, Typed=True, Active=True",
+        "properties": {
+          "Hover": "False",
+          "Typing": "True",
+          "Error": "False",
+          "Typed": "True",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      },
+      {
+        "id": "4158:7595",
+        "name": "Hover=True, Typing=True, Error=False, Typed=True, Active=True",
+        "properties": {
+          "Hover": "True",
+          "Typing": "True",
+          "Error": "False",
+          "Typed": "True",
+          "Active": "True"
+        },
+        "width": 217,
+        "height": 63,
+        "focusRing": false
+      }
+    ]
+  }
+}

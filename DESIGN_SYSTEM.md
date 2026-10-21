@@ -1,9 +1,9 @@
-# BA Design System v0.2.0
+# BA design-system integration
 
-Shared CSS and React component adoption runtime load from the BA repository through pinned CDN URLs in index.html. No design-system implementation or folder belongs in this project.
+The Acoustic Matrix frontend is a React app in `react-app/`. It imports BA React components and the shared consumer stylesheet from the sibling `va-design-system` checkout at build time. The published site contains the compiled result and does not require the BA CDN at runtime.
 
-Page uses background/neutral/page; Sidebar, Topbar and Surface use background/neutral/default. Buttons declare explicit variants, tones and sizes; ghost borders follow currentColor. Main product headings use Display (The Seasons).
+`react-app/src/ui.tsx` is the component adapter. Product code uses `Action`, `IconAction`, `Surface`, and `Select`. BA buttons and icon buttons are mapped there. `Select` remains a native control until BA publishes a tested Dropdown; replacing that one adapter function is the intended upgrade path. New BA components are adopted deliberately after checking their behavior and appearance rather than automatically inheriting an unreviewed variant.
 
-Existing tool behavior and DOM listeners are retained by the central React adapter. New React views can use createReactComponents(React) from BA dist/browser-components.mjs; both paths use the same component attributes and CSS. The tools themselves remain HTML/JavaScript applications during this transition.
+The audio analysis and canvas renderer remain in `app/app.js`. React mounts stable controls before loading that engine, so file upload, view mode, scale, zoom, pan, colors, and playback retain their existing behavior. `legacy.html` is the preserved pre-React page.
 
-Canonical source: https://github.com/shubhamarya-uxnai/BA-Design-Sytem/tree/v0.2.0
+Build from `react-app/` with `npm run build`. The BA checkout is expected at `../../../va-design-system` relative to that directory, or set `BA_DESIGN_SYSTEM_DIR`. The output goes to the repository root for GitHub Pages. Vite uses relative asset URLs because this is a GitHub Pages project subpath.

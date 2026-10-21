@@ -457,7 +457,7 @@ function drawPlaybackHead3D() {
 function setViewMode(mode) {
   state.viewMode = mode;
   state.auto = mode === "3d" ? state.auto : false;
-  toggleMotion.textContent = state.auto ? "Ⅱ" : "▶";
+  window.dispatchEvent(new CustomEvent("acoustic:motion", { detail: state.auto }));
   toggleMotion.disabled = mode !== "3d";
   viewModeButtons.forEach((button) => {
     button.dataset.active = button.dataset.mode === mode ? "true" : "false";
@@ -773,7 +773,7 @@ resetView.addEventListener("click", () => {
 toggleMotion.addEventListener("click", () => {
   if (state.viewMode !== "3d") return;
   state.auto = !state.auto;
-  toggleMotion.textContent = state.auto ? "Ⅱ" : "▶";
+  window.dispatchEvent(new CustomEvent("acoustic:motion", { detail: state.auto }));
 });
 
 viewModeButtons.forEach((button) => {

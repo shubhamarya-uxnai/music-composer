@@ -1,0 +1,14 @@
+@import "../../../../va-design-system/dist/consumer.css";
+@import "../../app/styles.css";
+
+.source-controls .upload-control { display: flex; align-items: end; }
+.upload-control input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.upload-control .ds-button { min-height: 44px; display: inline-flex; align-items: center; cursor: pointer; }
+.view-switcher .ds-button[data-active="true"] { background: var(--primary); color: var(--primary-foreground); }
+.app-shell .ds-icon-button { min-width: 44px; min-height: 44px; }
+.app-shell select { color: var(--foreground); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 9px; }
+.app-shell .appearance-dialog { border: 1px solid var(--border); border-radius: 18px; color: var(--foreground); background: var(--background); padding: 24px; width: min(420px, calc(100vw - 40px)); }
+.app-shell > .topbar { grid-template-columns: minmax(240px,1fr) minmax(320px,760px) auto; }
+.appearance-dialog::backdrop { background: #0009; }
+.appearance-dialog h2 { margin-top: 0; }
+.appearance-dialog .setting-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 12px 0; }
