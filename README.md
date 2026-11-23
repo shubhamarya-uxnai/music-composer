@@ -1,4 +1,4 @@
-# Acoustic Matrix / Sound Visualizer v1.2.1
+# Acoustic Matrix / Sound Visualizer v1.2.2
 
 Live: https://shubhamarya-uxnai.github.io/music-composer/
 

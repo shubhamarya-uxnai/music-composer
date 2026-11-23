@@ -1149,6 +1149,10 @@ canvas.addEventListener("wheel", (event) => {
 }, { passive: false });
 
 window.addEventListener("resize", resizeCanvas);
+if (typeof ResizeObserver !== "undefined") {
+  const canvasObserver = new ResizeObserver(() => resizeCanvas());
+  canvasObserver.observe(canvas);
+}
 
 if (renderStyle) renderStyle.value = state.renderStyle;
 createDemoMap();

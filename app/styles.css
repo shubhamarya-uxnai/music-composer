@@ -121,7 +121,7 @@ input {
   color: var(--muted-foreground);
 }
 
-.link-field input {
+.link-field input:not(.figma-input__input) {
   width: 100%;
   min-height: 44px;
   padding: 0 12px;
@@ -132,7 +132,7 @@ input {
   outline: none;
 }
 
-.link-field input:focus {
+.link-field input:not(.figma-input__input):focus {
   border-color: var(--ring);
 }
 
@@ -281,11 +281,12 @@ input {
   display: grid;
   grid-template-rows: auto auto minmax(360px, 1fr) auto;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: var(--ba-screen-size-switch-corner-radius-l, 12px);
 }
 
 .viewer-toolbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 16px;
   align-items: center;
@@ -328,6 +329,7 @@ input {
 .timeline-toolbar label {
   display: grid;
   gap: 6px;
+  min-width: 0;
 }
 
 .timeline-toolbar span {

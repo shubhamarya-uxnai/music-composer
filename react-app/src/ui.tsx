@@ -29,11 +29,11 @@ export const StepperChild = BAStepperChild
 export const SegmentedProgress = BASegmentedProgress
 export const Stepper = BAStepper
 
-export function Action({ children, id, className, kind = "ghost", size = "small", enabled = true, title, onClick, ...rest }: { children: ReactNode; id?: string; className?: string; kind?: "primary" | "ghost" | "default"; size?: "small" | "large"; enabled?: boolean; title?: string; onClick?: () => void; "data-mode"?: string }) {
-  return <BAButton id={id} className={className} title={title} onClick={onClick} {...rest} Type={kind === "primary" ? "Primary" : kind === "default" ? "Default" : "Ghost"} Size={size === "large" ? "Large" : "Small"} Enabled={enabled} {...{ "Leading Icon": false, "Tailing Icon": false }}>{children}</BAButton>
+export function Action({ children, id, className, kind = "ghost", size = "small", enabled = true, leadingIcon, title, onClick, ...rest }: { children: ReactNode; id?: string; className?: string; kind?: "primary" | "ghost" | "default"; size?: "small" | "large"; enabled?: boolean; leadingIcon?: string; title?: string; onClick?: () => void; "data-mode"?: string }) {
+  return <BAButton id={id} className={className} title={title} onClick={onClick} {...rest} Type={kind === "primary" ? "Primary" : kind === "default" ? "Default" : "Ghost"} Size={size === "large" ? "Large" : "Small"} Enabled={enabled} {...{ "Leading Icon": Boolean(leadingIcon), ...(leadingIcon ? { "leading-icon": leadingIcon } : {}), "Tailing Icon": false }}>{children}</BAButton>
 }
-export function IconAction({ icon, id, kind = "ghost", size = "large", enabled = true, title, onClick }: { icon: string; id?: string; kind?: "primary" | "ghost" | "default"; size?: "small" | "large"; enabled?: boolean; title: string; onClick?: () => void }) {
-  return <BAIconButton id={id} title={title} aria-label={title} onClick={onClick} Type={kind === "primary" ? "Primary" : kind === "default" ? "Default" : "Ghost"} Size={size === "small" ? "Small" : "Large"} Enabled={enabled} icon={icon} />
+export function IconAction({ icon, id, className, kind = "ghost", size = "large", enabled = true, title, onClick }: { icon: string; id?: string; className?: string; kind?: "primary" | "ghost" | "default"; size?: "small" | "large"; enabled?: boolean; title: string; onClick?: () => void }) {
+  return <BAIconButton id={id} className={className} title={title} aria-label={title} onClick={onClick} Type={kind === "primary" ? "Primary" : kind === "default" ? "Default" : "Ghost"} Size={size === "small" ? "Small" : "Large"} Enabled={enabled} icon={icon} />
 }
 export function Surface({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={className} data-ba-component="Surface" data-ba-surface="default">{children}</div>
