@@ -428,10 +428,11 @@ function project(point) {
   const rz = x * sy + z * cy;
   const ry = y * cp - rz * sp;
   const depth = y * sp + rz * cp;
-  const scale = state.zoom * 1.02;
+  const fit = Math.min(canvas.clientWidth / 940, canvas.clientHeight / 680);
+  const scale = state.zoom * Math.max(0.68, Math.min(1.02, fit));
   return {
     x: canvas.clientWidth / 2 + state.panX + rx * scale,
-    y: canvas.clientHeight * 0.62 + state.panY - ry * scale,
+    y: canvas.clientHeight * 0.54 + state.panY - ry * scale,
     depth,
     amp: point.y,
   };
@@ -464,22 +465,23 @@ function syncTimelinePanControl() {
 
 function drawGrid() {
   const axes = [
-    [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }, "Time"],
-    [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, "Frequency"],
-    [{ x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 }, "Amplitude"],
+    [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }, { x: 1.07, y: 0, z: 0 }, "Time"],
+    [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: 1.08 }, "Frequency"],
+    [{ x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 }, { x: 0, y: 1.09, z: 0 }, "Amplitude"],
   ];
   ctx.lineWidth = 1;
   ctx.font = "12px Inter, system-ui";
-  for (const [a, b, label] of axes) {
+  for (const [a, b, labelPoint, label] of axes) {
     const pa = project(a);
     const pb = project(b);
+    const pl = project(labelPoint);
     ctx.strokeStyle = "rgba(255,255,255,0.28)";
     ctx.beginPath();
     ctx.moveTo(pa.x, pa.y);
     ctx.lineTo(pb.x, pb.y);
     ctx.stroke();
     ctx.fillStyle = "rgba(255,255,255,0.72)";
-    ctx.fillText(label, pb.x + 8, pb.y + 4);
+    ctx.fillText(label, pl.x + 4, pl.y + 4);
   }
   drawAxisScaleLabels3D();
   drawBeatMarkers3D();
@@ -503,6 +505,7 @@ function drawAxisScaleLabels3D() {
 function drawTimeMarkers3D() {
   const ticks = getTimeTicks(7);
   ctx.font = "11px Inter, system-ui";
+  ctx.textAlign = "center";
   for (const tick of ticks) {
     const vx = getVisibleX(tick.songX);
     if (vx < -0.02 || vx > 1.02) continue;
@@ -514,8 +517,9 @@ function drawTimeMarkers3D() {
     ctx.lineTo(stem.x, stem.y);
     ctx.stroke();
     ctx.fillStyle = "rgba(255,255,255,0.68)";
-    ctx.fillText(tick.label, stem.x - 10, stem.y + 16);
+    ctx.fillText(tick.label, stem.x, stem.y + 18);
   }
+  ctx.textAlign = "left";
 }
 
 function drawBeatMarkers3D() {
@@ -573,6 +577,7 @@ function drawPlaybackHead3D() {
 
 function setViewMode(mode) {
   state.viewMode = mode;
+  window.dispatchEvent(new CustomEvent("acoustic:viewmode", { detail: mode }));
   state.auto = mode === "3d" ? state.auto : false;
   window.dispatchEvent(new CustomEvent("acoustic:motion", { detail: state.auto }));
   toggleMotion.disabled = mode !== "3d";

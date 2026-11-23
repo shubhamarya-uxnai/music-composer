@@ -1,21 +1,209 @@
-@import "../../../../va-design-system/dist/consumer.css";
 @import "../../app/styles.css";
+@import "../../../../va-design-system/dist/consumer.css";
 
-.source-controls .upload-control { display: flex; align-items: end; }
-.upload-control input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-.upload-control .ds-button { min-height: 44px; display: inline-flex; align-items: center; cursor: pointer; }
-.view-switcher .ds-button[data-active="true"] { background: var(--primary); color: var(--primary-foreground); }
-.app-shell .ds-icon-button { min-width: 44px; min-height: 44px; }
-.app-shell select { color: var(--foreground); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 9px; }
-.app-shell .appearance-dialog { border: 1px solid var(--border); border-radius: 18px; color: var(--foreground); background: var(--background); padding: 24px; width: min(420px, calc(100vw - 40px)); }
-.app-shell > .topbar { grid-template-columns: minmax(240px,1fr) minmax(320px,760px) auto; }
-.appearance-dialog::backdrop { background: #0009; }
-.appearance-dialog h2 { margin-top: 0; }
-.appearance-dialog .setting-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 12px 0; }
-.link-check-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.link-check-button .figma-label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.link-loader.figma-loader--circular { width: 16px; height: 16px; flex: 0 0 16px; }
-.analysis-feedback { display: grid; gap: 8px; margin-top: 4px; }
-.analysis-progress.figma-progress-bar, .analysis-bar-loader.figma-loader--bar { width: 100%; }
-.appearance-version { margin: 16px 0 0; color: var(--muted-foreground); }
-.appearance-version a { color: inherit; }
+.app-shell > .topbar {
+  display: grid;
+  grid-template-columns: minmax(220px, auto) minmax(320px, 1fr) auto;
+  gap: 20px;
+  align-items: end;
+  padding: 12px 0 20px;
+}
+
+.brand-title[data-ba-component="Display"] {
+  font-size: clamp(28px, 2.5vw, 36px);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.eyebrow,
+.section-kicker,
+.metric-label {
+  font-size: var(--ba-typography-font-sizes-12, 12px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ba-semantic-color-tokens-foreground-neutral-subtle, var(--muted-foreground));
+  margin: 0;
+}
+
+.eyebrow {
+  margin-bottom: 6px;
+}
+
+.section-heading {
+  font-size: var(--ba-typography-font-sizes-16, 16px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ba-semantic-color-tokens-foreground-neutral-default, var(--foreground));
+  margin: 0;
+}
+
+.section-copy {
+  font-size: var(--ba-typography-font-sizes-14, 14px);
+  line-height: 1.45;
+  color: var(--ba-semantic-color-tokens-foreground-neutral-subtle, var(--muted-foreground));
+  margin: 0;
+}
+
+.metric-value {
+  font-size: var(--ba-typography-font-sizes-20, 20px);
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--ba-semantic-color-tokens-foreground-neutral-default, var(--foreground));
+}
+
+.source-controls {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.source-controls .upload-control {
+  display: flex;
+  align-items: end;
+}
+
+.upload-control input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.source-controls .figma-input {
+  width: 100%;
+  max-width: none;
+}
+
+.source-controls .figma-input:not(.figma-input--with-button) .figma-input__control {
+  margin-right: 0;
+}
+
+.figma-button {
+  max-width: none;
+}
+
+.figma-icon-button {
+  flex: none;
+}
+
+.figma-icon > .material-symbols-rounded {
+  font-size: inherit;
+  line-height: 1;
+}
+
+.view-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--ba-semantic-color-tokens-border-subtle, var(--border));
+  border-radius: var(--ba-screen-size-switch-corner-radius-l, 10px);
+  background: var(--ba-semantic-color-tokens-background-neutral-raised, var(--card));
+}
+
+.view-switcher .figma-button[data-active="false"] {
+  border-color: transparent;
+}
+
+.timeline-toolbar {
+  background: var(--ba-semantic-color-tokens-background-neutral-raised, var(--card));
+  border-bottom: 1px solid var(--ba-semantic-color-tokens-border-subtle, var(--border));
+}
+
+.app-shell select {
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: var(--ba-screen-size-switch-corner-radius-m, 8px);
+  border: 1px solid var(--ba-semantic-color-tokens-border-default, var(--input));
+  background: var(--ba-semantic-color-tokens-background-neutral-default, var(--background));
+  color: var(--ba-semantic-color-tokens-foreground-neutral-default, var(--foreground));
+}
+
+.app-shell .appearance-dialog {
+  border: 1px solid var(--ba-semantic-color-tokens-border-subtle, var(--border));
+  border-radius: var(--ba-screen-size-switch-corner-radius-l, 12px);
+  color: var(--ba-semantic-color-tokens-foreground-neutral-default, var(--foreground));
+  background: var(--ba-semantic-color-tokens-background-neutral-default, var(--card));
+  padding: 24px;
+  width: min(440px, calc(100vw - 32px));
+}
+
+.appearance-dialog::backdrop {
+  background: #0009;
+}
+
+.appearance-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.appearance-dialog h2 {
+  margin: 0;
+}
+
+.appearance-dialog .setting-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0;
+}
+
+.appearance-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.link-check-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.link-check-button .figma-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.link-loader.figma-loader--circular {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.analysis-feedback {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.analysis-progress.figma-progress-bar,
+.analysis-bar-loader.figma-loader--bar {
+  width: 100%;
+}
+
+.appearance-version {
+  margin: 16px 0 0;
+  color: var(--ba-semantic-color-tokens-foreground-neutral-subtle, var(--muted-foreground));
+}
+
+.appearance-version a {
+  color: inherit;
+}
+
+@media (max-width: 980px) {
+  .app-shell > .topbar {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}
