@@ -28,7 +28,7 @@ input {
 }
 
 .app-shell {
-  width: min(1440px, 100%);
+  width: 100%;
   min-height: 100vh;
   margin: 0 auto;
   padding: 20px;

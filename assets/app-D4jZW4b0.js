@@ -157,7 +157,9 @@ async function handleFile(file) {
     emitAnalysisState("loading", 55, "Computing log-frequency spectrum...");
     await nextFrame();
     const mono = mixToMono(decoded);
-    const analysis = analyseAudio(mono, decoded.sampleRate, decoded.duration);
+    const analysis = await analyseAudio(mono, decoded.sampleRate, decoded.duration, (ratio) => {
+      emitAnalysisState("loading", Math.min(95, 55 + Math.round(ratio * 40)), "Computing log-frequency spectrum...");
+    });
     state.points = analysis.points;
     state.surfacePoints = analysis.surfacePoints;
     state.onsets = analysis.onsets;
@@ -193,10 +195,10 @@ function mixToMono(buffer) {
   return mono;
 }
 
-function analyseAudio(samples, sampleRate, duration) {
+async function analyseAudio(samples, sampleRate, duration, onProgress) {
   const downsampled = downsample(samples, sampleRate, analyserSettings.sampleRate);
   const bpm = estimateBpm(downsampled, analyserSettings.sampleRate);
-  const spectrum = computeLogSpectrum(downsampled, analyserSettings.sampleRate);
+  const spectrum = await computeLogSpectrum(downsampled, analyserSettings.sampleRate, onProgress);
   return { bpm, points: spectrum.points, surfacePoints: spectrum.surfacePoints, onsets: spectrum.onsets, duration };
 }
 
@@ -240,15 +242,17 @@ function estimateBpm(samples, sampleRate) {
   return bestBpm;
 }
 
-function computeLogSpectrum(samples, sampleRate) {
+async function computeLogSpectrum(samples, sampleRate, onProgress) {
   const { fftSize, hopSize, timeBins, frequencyBins } = analyserSettings;
   const totalFrames = Math.max(1, Math.floor((samples.length - fftSize) / hopSize));
   const frameStep = Math.max(1, Math.floor(totalFrames / timeBins));
+  const expectedBins = Math.max(1, Math.ceil(totalFrames / frameStep));
   const frequencies = makeLogFrequencies(frequencyBins);
   const points = [];
   const surfacePoints = [];
   let maxAmp = 0;
   const raw = [];
+  let doneBins = 0;
 
   for (let frameIndex = 0; frameIndex < totalFrames; frameIndex += frameStep) {
     const start = frameIndex * hopSize;
@@ -258,6 +262,11 @@ function computeLogSpectrum(samples, sampleRate) {
       const amp = mags[f];
       if (amp > maxAmp) maxAmp = amp;
       raw.push({ x, freqHz: frequencies[f], amp });
+    }
+    doneBins += 1;
+    if (doneBins % 10 === 0) {
+      if (onProgress) onProgress(doneBins / expectedBins);
+      await nextFrame();
     }
   }
 
@@ -415,6 +424,22 @@ function updateMetrics() {
   metricPoints.textContent = count ? count.toLocaleString() : "--";
 }
 
+function get3DTransform() {
+  const w = Math.max(240, canvas.clientWidth);
+  const h = Math.max(220, canvas.clientHeight);
+  const padLeft = w < 500 ? 46 : 64;
+  const padRight = w < 500 ? 38 : 54;
+  const padTop = 24;
+  const padBottom = 32;
+  const availW = Math.max(120, w - padLeft - padRight);
+  const availH = Math.max(120, h - padTop - padBottom);
+  const baseScale = Math.min(availW / 815, availH / 605);
+  const scale = state.zoom * Math.max(0.28, Math.min(1.35, baseScale));
+  const originX = padLeft + availW / 2 - 9 * scale + state.panX;
+  const originY = padTop + availH / 2 + 109 * scale + state.panY;
+  return { scale, originX, originY };
+}
+
 function project(point) {
   const visibleX = getVisibleX(point.x);
   const x = (visibleX - 0.5) * 620;
@@ -428,11 +453,10 @@ function project(point) {
   const rz = x * sy + z * cy;
   const ry = y * cp - rz * sp;
   const depth = y * sp + rz * cp;
-  const fit = Math.min(canvas.clientWidth / 940, canvas.clientHeight / 680);
-  const scale = state.zoom * Math.max(0.68, Math.min(1.02, fit));
+  const { scale, originX, originY } = get3DTransform();
   return {
-    x: canvas.clientWidth / 2 + state.panX + rx * scale,
-    y: canvas.clientHeight * 0.54 + state.panY - ry * scale,
+    x: originX + rx * scale,
+    y: originY - ry * scale,
     depth,
     amp: point.y,
   };
@@ -469,8 +493,9 @@ function drawGrid() {
     [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: 1.08 }, "Frequency"],
     [{ x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 }, { x: 0, y: 1.09, z: 0 }, "Amplitude"],
   ];
+  const compact = canvas.clientWidth < 500;
   ctx.lineWidth = 1;
-  ctx.font = "12px Inter, system-ui";
+  ctx.font = compact ? "10px Inter, system-ui" : "12px Inter, system-ui";
   for (const [a, b, labelPoint, label] of axes) {
     const pa = project(a);
     const pb = project(b);
@@ -490,12 +515,15 @@ function drawGrid() {
 }
 
 function drawAxisScaleLabels3D() {
-  ctx.font = "11px Inter, system-ui";
+  const compact = canvas.clientWidth < 500;
+  ctx.font = compact ? "10px Inter, system-ui" : "11px Inter, system-ui";
   ctx.fillStyle = "rgba(255,255,255,0.66)";
+  ctx.textAlign = "right";
   for (const tick of getFrequencyTicks().filter((_, index) => index % 2 === 0)) {
     const point = project({ x: 0, y: 0, z: tick.value });
-    ctx.fillText(tick.label, point.x - 46, point.y + 4);
+    ctx.fillText(tick.label, point.x - 8, point.y + 4);
   }
+  ctx.textAlign = "left";
   for (const tick of getAmplitudeTicks()) {
     const point = project({ x: 0, y: tick.value, z: 0 });
     ctx.fillText(tick.label, point.x + 8, point.y + 4);
@@ -503,8 +531,9 @@ function drawAxisScaleLabels3D() {
 }
 
 function drawTimeMarkers3D() {
-  const ticks = getTimeTicks(7);
-  ctx.font = "11px Inter, system-ui";
+  const compact = canvas.clientWidth < 500;
+  const ticks = getTimeTicks(compact ? 4 : 7);
+  ctx.font = compact ? "10px Inter, system-ui" : "11px Inter, system-ui";
   ctx.textAlign = "center";
   for (const tick of ticks) {
     const vx = getVisibleX(tick.songX);
@@ -517,7 +546,7 @@ function drawTimeMarkers3D() {
     ctx.lineTo(stem.x, stem.y);
     ctx.stroke();
     ctx.fillStyle = "rgba(255,255,255,0.68)";
-    ctx.fillText(tick.label, stem.x, stem.y + 18);
+    ctx.fillText(tick.label, stem.x, stem.y + (compact ? 14 : 18));
   }
   ctx.textAlign = "left";
 }
@@ -741,18 +770,16 @@ function getTimeTicks(count) {
 }
 
 function drawPlotFrame(yLabel, yTicks) {
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  const padLeft = 72;
-  const padRight = 26;
-  const padTop = 30;
-  const padBottom = 54;
+  const frame = getPlotFrame();
+  const { width, height, padLeft, padRight, padTop, padBottom } = frame;
+  const compact = width < 500;
   ctx.fillStyle = "#05070d";
   ctx.fillRect(0, 0, width, height);
   ctx.strokeStyle = "rgba(255,255,255,0.14)";
   ctx.lineWidth = 1;
-  for (let i = 0; i <= 8; i += 1) {
-    const x = padLeft + ((width - padLeft - padRight) * i) / 8;
+  const gridCols = compact ? 4 : 8;
+  for (let i = 0; i <= gridCols; i += 1) {
+    const x = padLeft + ((width - padLeft - padRight) * i) / gridCols;
     ctx.beginPath();
     ctx.moveTo(x, padTop);
     ctx.lineTo(x, height - padBottom);
@@ -773,15 +800,15 @@ function drawPlotFrame(yLabel, yTicks) {
   ctx.lineTo(width - padRight, height - padBottom);
   ctx.stroke();
   ctx.fillStyle = "rgba(255,255,255,0.78)";
-  ctx.font = "12px Inter, system-ui";
-  ctx.fillText("Time", width - padRight - 34, height - 16);
+  ctx.font = compact ? "10px Inter, system-ui" : "12px Inter, system-ui";
+  ctx.fillText("Time", width - padRight - 30, height - 12);
   ctx.textAlign = "center";
-  for (const tick of getTimeTicks(8)) {
+  for (const tick of getTimeTicks(gridCols)) {
     const vx = getVisibleX(tick.songX);
     if (vx < -0.01 || vx > 1.01) continue;
     const x = padLeft + (width - padLeft - padRight) * vx;
     ctx.fillStyle = "rgba(255,255,255,0.62)";
-    ctx.fillText(tick.label, x, height - 32);
+    ctx.fillText(tick.label, x, height - 28);
   }
   ctx.textAlign = "right";
   for (const tick of ticks) {
@@ -791,11 +818,11 @@ function drawPlotFrame(yLabel, yTicks) {
   }
   ctx.textAlign = "left";
   ctx.save();
-  ctx.translate(18, padTop + 118);
+  ctx.translate(compact ? 14 : 18, padTop + 118);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText(yLabel, 0, 0);
   ctx.restore();
-  return { width, height, padLeft, padRight, padTop, padBottom };
+  return frame;
 }
 
 function drawBeatMarkers2D(frame) {
@@ -972,13 +999,15 @@ function updateHoverMarker(clientX, clientY) {
 }
 
 function getPlotFrame() {
+  const width = canvas.clientWidth;
+  const compact = width < 500;
   return {
-    width: canvas.clientWidth,
+    width,
     height: canvas.clientHeight,
-    padLeft: 72,
-    padRight: 26,
-    padTop: 30,
-    padBottom: 54,
+    padLeft: compact ? 54 : 72,
+    padRight: compact ? 14 : 26,
+    padTop: 28,
+    padBottom: 48,
   };
 }
 
