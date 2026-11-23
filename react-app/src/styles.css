@@ -12,3 +12,10 @@
 .appearance-dialog::backdrop { background: #0009; }
 .appearance-dialog h2 { margin-top: 0; }
 .appearance-dialog .setting-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 12px 0; }
+.link-check-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.link-check-button .figma-label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.link-loader.figma-loader--circular { width: 16px; height: 16px; flex: 0 0 16px; }
+.analysis-feedback { display: grid; gap: 8px; margin-top: 4px; }
+.analysis-progress.figma-progress-bar, .analysis-bar-loader.figma-loader--bar { width: 100%; }
+.appearance-version { margin: 16px 0 0; color: var(--muted-foreground); }
+.appearance-version a { color: inherit; }

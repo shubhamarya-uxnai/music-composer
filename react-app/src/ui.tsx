@@ -23,8 +23,8 @@ export const StepperChild = BAStepperChild
 export const SegmentedProgress = BASegmentedProgress
 export const Stepper = BAStepper
 
-export function Action({ children, id, className, kind = "ghost", size = "small", title, onClick, ...rest }: { children: ReactNode; id?: string; className?: string; kind?: "primary" | "ghost" | "default"; size?: "small" | "large"; title?: string; onClick?: () => void; "data-mode"?: string }) {
-  return <BAButton id={id} className={className} title={title} onClick={onClick} {...rest} Type={kind === "primary" ? "Primary" : kind === "default" ? "Default" : "Ghost"} Size={size === "large" ? "Large" : "Small"} Enabled={true} {...{ "Leading Icon": false, "Tailing Icon": false }}>{children}</BAButton>
+export function Action({ children, id, className, kind = "ghost", size = "small", enabled = true, title, onClick, ...rest }: { children: ReactNode; id?: string; className?: string; kind?: "primary" | "ghost" | "default"; size?: "small" | "large"; enabled?: boolean; title?: string; onClick?: () => void; "data-mode"?: string }) {
+  return <BAButton id={id} className={className} title={title} onClick={onClick} {...rest} Type={kind === "primary" ? "Primary" : kind === "default" ? "Default" : "Ghost"} Size={size === "large" ? "Large" : "Small"} Enabled={enabled} {...{ "Leading Icon": false, "Tailing Icon": false }}>{children}</BAButton>
 }
 export function IconAction({ icon, id, title, onClick }: { icon: string; id?: string; title: string; onClick?: () => void }) {
   const paths: Record<string, ReactNode> = {
@@ -40,6 +40,6 @@ export function IconAction({ icon, id, title, onClick }: { icon: string; id?: st
 export function Surface({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={className} data-ba-component="Surface" data-ba-surface="default">{children}</div>
 }
-export function Select({ id, label, choices }: { id: string; label: string; choices: [string, string][] }) {
-  return <label><span className="ds-type-label-micro">{label}</span><select id={id} defaultValue={choices[0][0]}>{choices.map(([value, text]) => <option value={value} key={value}>{text}</option>)}</select></label>
+export function Select({ id, label, choices, defaultValue }: { id: string; label: string; choices: [string, string][]; defaultValue?: string }) {
+  return <label><span className="ds-type-label-micro">{label}</span><select id={id} defaultValue={defaultValue ?? choices[0][0]}>{choices.map(([value, text]) => <option value={value} key={value}>{text}</option>)}</select></label>
 }

@@ -28,6 +28,9 @@ const viewModeButtons = Array.from(document.querySelectorAll(".view-mode-button"
 
 const state = {
   points: [],
+  surfacePoints: [],
+  onsets: [],
+  hoverMarker: null,
   bpm: null,
   duration: 0,
   beatSeconds: 0,
@@ -46,7 +49,7 @@ const state = {
   amplitudeScale: "db",
   timelineZoom: 1,
   timeOffset: 0,
-  renderStyle: "points",
+  renderStyle: "surface",
   baseColor: "#4b5563",
   activeColor: "#68d6b9",
 };
@@ -89,6 +92,14 @@ function setStatus(message) {
   statusText.textContent = message;
 }
 
+function emitAnalysisState(phase, progress, label = "") {
+  window.dispatchEvent(new CustomEvent("acoustic:analysis", { detail: { phase, progress, label } }));
+}
+
+function nextFrame() {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
   const scale = Math.min(window.devicePixelRatio || 1, 2);
@@ -100,6 +111,7 @@ function resizeCanvas() {
 
 function createDemoMap() {
   const points = [];
+  const surfacePoints = [];
   const timeBins = 96;
   const freqBins = 56;
   for (let t = 0; t < timeBins; t += 1) {
@@ -108,41 +120,55 @@ function createDemoMap() {
       const ridge = Math.exp(-Math.pow((f - 12 - Math.sin(t * 0.08) * 8) / 7, 2));
       const pulse = (t % 12) / 12 < 0.34 ? 0.55 : 0.08;
       const amp = Math.max(0, Math.min(1, ridge * 0.72 + harmonic * 0.18 + pulse * Math.exp(-f / 22)));
-      if (amp > 0.18) points.push(makePoint(t / (timeBins - 1), f / (freqBins - 1), amp));
+      const point = makePoint(t / (timeBins - 1), f / (freqBins - 1), amp);
+      surfacePoints.push(point);
+      if (amp > 0.18) points.push(point);
     }
   }
   state.points = points;
+  state.surfacePoints = surfacePoints;
+  state.onsets = detectPatternOnsets(surfacePoints);
+  state.hoverMarker = null;
   state.duration = 32;
   state.bpm = 112;
   state.beatSeconds = 60 / state.bpm;
   updateMetrics();
+  emitAnalysisState("idle", 0, "Demo field");
 }
 
 async function handleFile(file) {
   if (!file) return;
   if (state.objectUrl) URL.revokeObjectURL(state.objectUrl);
   state.objectUrl = URL.createObjectURL(file);
+  state.hoverMarker = null;
   audioPlayer.src = state.objectUrl;
   audioPlayer.load();
   audioStatus.textContent = "Ready to play while the map is being analyzed.";
   trackName.textContent = file.name;
   viewerSubtitle.textContent = "Decoding uploaded audio locally...";
   setStatus("Reading file, decoding waveform, estimating beat grid, then calculating the first log-frequency amplitude field.");
+  emitAnalysisState("loading", 15, "Decoding audio...");
+  await nextFrame();
 
   try {
     const arrayBuffer = await file.arrayBuffer();
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: analyserSettings.sampleRate });
     const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+    emitAnalysisState("loading", 55, "Computing log-frequency spectrum...");
+    await nextFrame();
     const mono = mixToMono(decoded);
     const analysis = analyseAudio(mono, decoded.sampleRate, decoded.duration);
     state.points = analysis.points;
+    state.surfacePoints = analysis.surfacePoints;
+    state.onsets = analysis.onsets;
     state.bpm = analysis.bpm;
     state.duration = decoded.duration;
     state.beatSeconds = 60 / analysis.bpm;
     updateMetrics();
-    viewerSubtitle.textContent = `${analysis.points.length.toLocaleString()} amplitude points, grouped against a ${analysis.bpm} BPM estimate.`;
+    viewerSubtitle.textContent = `${(analysis.surfacePoints.length || analysis.points.length).toLocaleString()} spectral samples, ${analysis.onsets.length} detected onsets, ${analysis.bpm} BPM estimate.`;
     audioStatus.textContent = "Use the controls to listen while rotating the map.";
     setStatus("Map generated. Drag the canvas to rotate, scroll to zoom, and reset whenever the space gets too dramatic.");
+    emitAnalysisState("ready", 100, "Map ready");
     draw();
     audioCtx.close();
   } catch (error) {
@@ -150,6 +176,7 @@ async function handleFile(file) {
     audioStatus.textContent = "Playback may still work, but analysis failed for this file.";
     setStatus("The browser could not decode this file. The production path should normalize it first with FFmpeg, then send a clean WAV into the analyzer.");
     viewerSubtitle.textContent = "Decode failed. Try another local audio file.";
+    emitAnalysisState("error", 40, "Browser decode failed");
   }
 }
 
@@ -170,7 +197,7 @@ function analyseAudio(samples, sampleRate, duration) {
   const downsampled = downsample(samples, sampleRate, analyserSettings.sampleRate);
   const bpm = estimateBpm(downsampled, analyserSettings.sampleRate);
   const spectrum = computeLogSpectrum(downsampled, analyserSettings.sampleRate);
-  return { bpm, points: spectrum, duration };
+  return { bpm, points: spectrum.points, surfacePoints: spectrum.surfacePoints, onsets: spectrum.onsets, duration };
 }
 
 function downsample(samples, sourceRate, targetRate) {
@@ -219,6 +246,7 @@ function computeLogSpectrum(samples, sampleRate) {
   const frameStep = Math.max(1, Math.floor(totalFrames / timeBins));
   const frequencies = makeLogFrequencies(frequencyBins);
   const points = [];
+  const surfacePoints = [];
   let maxAmp = 0;
   const raw = [];
 
@@ -235,20 +263,82 @@ function computeLogSpectrum(samples, sampleRate) {
 
   for (const item of raw) {
     const ampRaw = item.amp / (maxAmp || 1);
-    const y = scaleAmplitude(ampRaw);
-    if (y > 0.12) points.push(makePoint(item.x, scaleFrequency(item.freqHz), ampRaw));
+    const point = makePoint(item.x, scaleFrequency(item.freqHz), ampRaw, item.freqHz);
+    surfacePoints.push(point);
+    if (point.y > 0.12) points.push(point);
   }
-  return points;
+  return { points, surfacePoints, onsets: detectPatternOnsets(surfacePoints) };
 }
 
-function makePoint(x, z, ampRaw) {
+function makePoint(x, z, ampRaw, freqHz = unscaleFrequency(z)) {
   return {
     x,
     z,
     y: scaleAmplitude(ampRaw),
     ampRaw,
-    freqHz: unscaleFrequency(z),
+    freqHz,
   };
+}
+
+function noteFromFrequency(freqHz) {
+  if (!Number.isFinite(freqHz) || freqHz <= 0) return "--";
+  const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const midi = Math.round(69 + 12 * Math.log2(freqHz / 440));
+  const octave = Math.floor(midi / 12) - 1;
+  return `${noteNames[((midi % 12) + 12) % 12]}${octave}`;
+}
+
+function instrumentGuess(freqHz) {
+  if (freqHz < 70) return "sub / kick region";
+  if (freqHz < 180) return "bass region";
+  if (freqHz < 520) return "low voice / guitar / piano region";
+  if (freqHz < 2400) return "vocal / lead / chord region";
+  if (freqHz < 7000) return "presence / strings / synth region";
+  return "air / cymbal / texture region";
+}
+
+function detectPatternOnsets(points) {
+  if (!points.length) return [];
+  const byTime = new Map();
+  for (const point of points) {
+    const key = point.x.toFixed(4);
+    if (!byTime.has(key)) byTime.set(key, []);
+    byTime.get(key).push(point);
+  }
+  const frames = Array.from(byTime.entries())
+    .map(([x, framePoints]) => ({ x: Number(x), points: framePoints }))
+    .sort((a, b) => a.x - b.x);
+  const onsets = [];
+  let previous = null;
+  for (const frame of frames) {
+    const strong = frame.points
+      .filter((point) => point.y > 0.2)
+      .sort((a, b) => b.y - a.y);
+    if (!strong.length) {
+      previous = frame.points;
+      continue;
+    }
+    const candidate = strong[0];
+    const lastNear = previous
+      ? previous.filter((point) => Math.abs(point.z - candidate.z) < 0.055).reduce((max, point) => Math.max(max, point.y), 0)
+      : 0;
+    const jump = candidate.y - lastNear;
+    if (jump > 0.22 && candidate.y > 0.32) {
+      const tooClose = onsets.some((onset) => Math.abs(onset.x - frame.x) < 0.025 && Math.abs(onset.z - candidate.z) < 0.12);
+      if (!tooClose) {
+        onsets.push({
+          x: frame.x,
+          z: candidate.z,
+          y: candidate.y,
+          freqHz: candidate.freqHz,
+          note: noteFromFrequency(candidate.freqHz),
+          instrument: instrumentGuess(candidate.freqHz),
+        });
+      }
+    }
+    previous = frame.points;
+  }
+  return onsets.slice(0, 72);
 }
 
 function makeLogFrequencies(count) {
@@ -291,6 +381,13 @@ function rescalePoints() {
     z: scaleFrequency(point.freqHz),
     y: scaleAmplitude(point.ampRaw),
   })).filter((point) => point.y > 0.04);
+  state.surfacePoints = state.surfacePoints.map((point) => ({
+    ...point,
+    z: scaleFrequency(point.freqHz),
+    y: scaleAmplitude(point.ampRaw),
+  }));
+  state.onsets = detectPatternOnsets(state.surfacePoints);
+  state.hoverMarker = null;
 }
 
 function naiveDft(samples, start, size, freqs, sampleRate) {
@@ -314,7 +411,8 @@ function updateMetrics() {
   metricBpm.textContent = state.bpm ? Math.round(state.bpm) : "--";
   metricDuration.textContent = state.duration ? formatTime(state.duration) : "--";
   metricBeat.textContent = state.beatSeconds ? `${state.beatSeconds.toFixed(2)}s` : "--";
-  metricPoints.textContent = state.points.length ? state.points.length.toLocaleString() : "--";
+  const count = state.surfacePoints.length || state.points.length;
+  metricPoints.textContent = count ? count.toLocaleString() : "--";
 }
 
 function project(point) {
@@ -384,6 +482,7 @@ function drawGrid() {
     ctx.fillText(label, pb.x + 8, pb.y + 4);
   }
   drawAxisScaleLabels3D();
+  drawBeatMarkers3D();
   drawTimeMarkers3D();
   drawPlaybackHead3D();
 }
@@ -416,6 +515,24 @@ function drawTimeMarkers3D() {
     ctx.stroke();
     ctx.fillStyle = "rgba(255,255,255,0.68)";
     ctx.fillText(tick.label, stem.x - 10, stem.y + 16);
+  }
+}
+
+function drawBeatMarkers3D() {
+  if (!state.duration || !state.beatSeconds) return;
+  const beatCount = Math.floor(state.duration / state.beatSeconds);
+  ctx.strokeStyle = "rgba(255,255,255,0.08)";
+  ctx.lineWidth = 1;
+  for (let beat = 0; beat <= beatCount; beat += 1) {
+    const songX = (beat * state.beatSeconds) / state.duration;
+    const vx = getVisibleX(songX);
+    if (vx < -0.02 || vx > 1.02) continue;
+    const a = project({ x: songX, y: 0, z: 0 });
+    const b = project({ x: songX, y: 0, z: 1 });
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
   }
 }
 
@@ -512,13 +629,15 @@ function draw() {
   drawGrid();
   if (state.renderStyle === "surface" || state.renderStyle === "hybrid") drawContinuousSurface3D();
   if (state.renderStyle !== "surface") drawPoints3D();
+  drawOnsetMarkers3D();
+  drawHoverTooltip();
 }
 
 function drawPoints3D() {
-  const plotted = state.points.map((p) => ({ ...project(p), amp: p.y })).sort((a, b) => a.depth - b.depth);
+  const plotted = state.points.map((p) => ({ ...project(p), songX: p.x, amp: p.y })).sort((a, b) => a.depth - b.depth);
   for (const p of plotted) {
     const r = 1.1 + p.amp * 3.8 * state.zoom;
-    ctx.fillStyle = isInActiveBeat(p.x) ? rgbaFromHex(state.activeColor, 0.36 + p.amp * 0.56) : rgbaFromHex(state.baseColor, 0.10 + p.amp * 0.16);
+    ctx.fillStyle = isInActiveBeat(p.songX) ? rgbaFromHex(state.activeColor, 0.36 + p.amp * 0.56) : rgbaFromHex(state.baseColor, 0.10 + p.amp * 0.16);
     ctx.beginPath();
     ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
     ctx.fill();
@@ -529,7 +648,7 @@ function drawContinuousSurface3D() {
   const timeBins = 84;
   const freqBins = 42;
   const grid = Array.from({ length: timeBins }, () => new Array(freqBins).fill(0));
-  for (const point of state.points) {
+  for (const point of state.surfacePoints.length ? state.surfacePoints : state.points) {
     const tx = Math.max(0, Math.min(timeBins - 1, Math.round(point.x * (timeBins - 1))));
     const fz = Math.max(0, Math.min(freqBins - 1, Math.round(point.z * (freqBins - 1))));
     grid[tx][fz] = Math.max(grid[tx][fz], point.y);
@@ -555,6 +674,52 @@ function drawContinuousSurface3D() {
       ctx.stroke();
     }
   }
+}
+
+function drawOnsetMarkers3D() {
+  const markers = [];
+  for (const onset of state.onsets) {
+    const vx = getVisibleX(onset.x);
+    if (vx < -0.03 || vx > 1.03) continue;
+    const p = project(onset);
+    markers.push({ ...onset, screenX: p.x, screenY: p.y, depth: p.depth });
+  }
+  markers.sort((a, b) => a.depth - b.depth);
+  for (const marker of markers) {
+    const active = isSameMarker(state.hoverMarker, marker) || isInActiveBeat(marker.x);
+    ctx.fillStyle = active ? rgbaFromHex(state.activeColor, 0.9) : "rgba(255,255,255,0.62)";
+    ctx.strokeStyle = "rgba(5,7,13,0.9)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(marker.screenX, marker.screenY, active ? 5 : 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function drawHoverTooltip() {
+  const marker = state.hoverMarker;
+  if (!marker) return;
+  const time = (marker.x * (state.duration || 0)).toFixed(2);
+  const lines = [
+    `${time}s  ${marker.note}`,
+    formatHz(marker.freqHz),
+    marker.instrument,
+  ];
+  ctx.font = "12px Inter, system-ui";
+  const width = Math.max(...lines.map((line) => ctx.measureText(line).width)) + 22;
+  const height = 66;
+  const x = Math.max(12, Math.min(canvas.clientWidth - width - 12, marker.screenX + 12));
+  const y = Math.max(12, marker.screenY - height - 10);
+  ctx.fillStyle = "rgba(10,14,24,0.92)";
+  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, 8);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "rgba(255,255,255,0.88)";
+  lines.forEach((line, index) => ctx.fillText(line, x + 11, y + 20 + index * 17));
 }
 
 function getTimeTicks(count) {
@@ -628,6 +793,24 @@ function drawPlotFrame(yLabel, yTicks) {
   return { width, height, padLeft, padRight, padTop, padBottom };
 }
 
+function drawBeatMarkers2D(frame) {
+  if (!state.duration || !state.beatSeconds) return;
+  const plotWidth = frame.width - frame.padLeft - frame.padRight;
+  const plotHeight = frame.height - frame.padTop - frame.padBottom;
+  const beatCount = Math.floor(state.duration / state.beatSeconds);
+  ctx.strokeStyle = "rgba(255,255,255,0.08)";
+  for (let beat = 0; beat <= beatCount; beat += 1) {
+    const songX = (beat * state.beatSeconds) / state.duration;
+    const vx = getVisibleX(songX);
+    if (vx < 0 || vx > 1) continue;
+    const x = frame.padLeft + vx * plotWidth;
+    ctx.beginPath();
+    ctx.moveTo(x, frame.padTop);
+    ctx.lineTo(x, frame.padTop + plotHeight);
+    ctx.stroke();
+  }
+}
+
 function drawPlaybackHead2D(frame) {
   const plotWidth = frame.width - frame.padLeft - frame.padRight;
   const plotHeight = frame.height - frame.padTop - frame.padBottom;
@@ -646,6 +829,7 @@ function drawPlaybackHead2D(frame) {
 
 function drawAmplitude2D() {
   const frame = drawPlotFrame("Amplitude", getAmplitudeTicks());
+  drawBeatMarkers2D(frame);
   const buckets = new Array(140).fill(0);
   for (const point of state.points) {
     const vx = getVisibleX(point.x);
@@ -681,19 +865,35 @@ function drawAmplitude2D() {
     ctx.fill();
   }
   drawPlaybackHead2D(frame);
+  drawOnsetMarkers2D(frame, "amplitude");
+  drawHoverTooltip();
 }
 
 function drawFrequency2D() {
   const frame = drawPlotFrame("Frequency", getFrequencyTicks());
+  drawBeatMarkers2D(frame);
   const plotWidth = frame.width - frame.padLeft - frame.padRight;
   const plotHeight = frame.height - frame.padTop - frame.padBottom;
-  for (const point of state.points) {
-    const vx = getVisibleX(point.x);
-    if (vx < 0 || vx > 1) continue;
-    const x = frame.padLeft + vx * plotWidth;
-    const y = frame.padTop + (1 - point.z) * plotHeight;
-    ctx.fillStyle = isInActiveBeat(point.x) ? rgbaFromHex(state.activeColor, 0.36 + point.y * 0.56) : rgbaFromHex(state.baseColor, 0.10 + point.y * 0.16);
-    ctx.fillRect(x, y, 3, 3);
+  if (state.renderStyle === "points") {
+    for (const point of state.points) {
+      const vx = getVisibleX(point.x);
+      if (vx < 0 || vx > 1) continue;
+      const x = frame.padLeft + vx * plotWidth;
+      const y = frame.padTop + (1 - point.z) * plotHeight;
+      ctx.fillStyle = isInActiveBeat(point.x) ? rgbaFromHex(state.activeColor, 0.36 + point.y * 0.56) : rgbaFromHex(state.baseColor, 0.10 + point.y * 0.16);
+      ctx.fillRect(x, y, 3, 3);
+    }
+  } else {
+    const source = state.surfacePoints.length ? state.surfacePoints : state.points;
+    for (const point of source) {
+      const vx = getVisibleX(point.x);
+      if (vx < 0 || vx > 1) continue;
+      const x = frame.padLeft + vx * plotWidth;
+      const y = frame.padTop + (1 - point.z) * plotHeight;
+      const color = isInActiveBeat(point.x) ? state.activeColor : state.baseColor;
+      ctx.fillStyle = rgbaFromHex(color, isInActiveBeat(point.x) ? 0.12 + point.y * 0.62 : 0.025 + point.y * 0.2);
+      ctx.fillRect(x, y, Math.max(2, plotWidth / 92), Math.max(2, plotHeight / 54));
+    }
   }
   if (state.frequencyScale !== "linear") {
     const center = scaleFrequency(440);
@@ -702,6 +902,79 @@ function drawFrequency2D() {
     ctx.fillText("440Hz", frame.padLeft + 8, frame.padTop + plotHeight * (1 - center));
   }
   drawPlaybackHead2D(frame);
+  drawOnsetMarkers2D(frame, "frequency");
+  drawHoverTooltip();
+}
+
+function drawOnsetMarkers2D(frame, mode) {
+  const plotWidth = frame.width - frame.padLeft - frame.padRight;
+  const plotHeight = frame.height - frame.padTop - frame.padBottom;
+  for (const onset of state.onsets) {
+    const vx = getVisibleX(onset.x);
+    if (vx < 0 || vx > 1) continue;
+    const x = frame.padLeft + vx * plotWidth;
+    const yValue = mode === "amplitude" ? onset.y : onset.z;
+    const y = frame.padTop + (1 - yValue) * plotHeight;
+    onset.screenX = x;
+    onset.screenY = y;
+    ctx.fillStyle = isSameMarker(state.hoverMarker, onset) ? rgbaFromHex(state.activeColor, 0.95) : "rgba(255,255,255,0.58)";
+    ctx.strokeStyle = "rgba(5,7,13,0.9)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, isSameMarker(state.hoverMarker, onset) ? 5 : 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function isSameMarker(a, b) {
+  return Boolean(a && b && Math.abs(a.x - b.x) < 0.0001 && Math.abs(a.z - b.z) < 0.0001);
+}
+
+function updateHoverMarker(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = clientX - rect.left;
+  const mouseY = clientY - rect.top;
+  let closest = null;
+  let closestDistance = 16;
+
+  for (const onset of state.onsets) {
+    const vx = getVisibleX(onset.x);
+    if (vx < -0.03 || vx > 1.03) continue;
+    let screen;
+    if (state.viewMode === "3d") {
+      screen = project(onset);
+    } else {
+      const frame = getPlotFrame();
+      const plotWidth = frame.width - frame.padLeft - frame.padRight;
+      const plotHeight = frame.height - frame.padTop - frame.padBottom;
+      const yValue = state.viewMode === "amplitude" ? onset.y : onset.z;
+      screen = {
+        x: frame.padLeft + vx * plotWidth,
+        y: frame.padTop + (1 - yValue) * plotHeight,
+      };
+    }
+    const distance = Math.hypot(screen.x - mouseX, screen.y - mouseY);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closest = { ...onset, screenX: screen.x, screenY: screen.y };
+    }
+  }
+
+  const changed = !isSameMarker(state.hoverMarker, closest);
+  state.hoverMarker = closest;
+  if (changed) draw();
+}
+
+function getPlotFrame() {
+  return {
+    width: canvas.clientWidth,
+    height: canvas.clientHeight,
+    padLeft: 72,
+    padRight: 26,
+    padTop: 30,
+    padBottom: 54,
+  };
 }
 
 function getFrequencyTicks() {
@@ -741,7 +1014,8 @@ mockLink.addEventListener("click", () => {
 
   mockLink.disabled = true;
   mockLink.dataset.loading = "true";
-  linkButtonLabel.textContent = "Checking";
+  window.dispatchEvent(new CustomEvent("acoustic:link", { detail: { checking: true } }));
+  if (linkButtonLabel) linkButtonLabel.textContent = "Checking";
   trackName.textContent = "Checking link";
   viewerSubtitle.textContent = "Checking link import path...";
   setStatus("Checking the import path...");
@@ -749,7 +1023,9 @@ mockLink.addEventListener("click", () => {
   window.setTimeout(() => {
     mockLink.disabled = false;
     mockLink.dataset.loading = "false";
-    linkButtonLabel.textContent = "Check link";
+    window.dispatchEvent(new CustomEvent("acoustic:link", { detail: { checking: false } }));
+    const label = document.getElementById("link-button-label") || linkButtonLabel;
+    if (label) label.textContent = "Check link";
     trackName.textContent = "Link needs backend";
     viewerSubtitle.textContent = "Upload works now. Link import is the next backend step.";
     setStatus("V0 cannot fetch music links in-browser yet. Next: yt-dlp + FFmpeg backend.");
@@ -831,7 +1107,10 @@ canvas.addEventListener("pointerdown", (event) => {
 });
 
 canvas.addEventListener("pointermove", (event) => {
-  if (!state.dragging) return;
+  if (!state.dragging) {
+    updateHoverMarker(event.clientX, event.clientY);
+    return;
+  }
   const dx = event.clientX - state.lastX;
   const dy = event.clientY - state.lastY;
   if (state.viewMode === "3d") {
@@ -852,6 +1131,12 @@ canvas.addEventListener("pointerup", () => {
   state.dragging = false;
 });
 
+canvas.addEventListener("pointerleave", () => {
+  state.dragging = false;
+  state.hoverMarker = null;
+  draw();
+});
+
 canvas.addEventListener("wheel", (event) => {
   event.preventDefault();
   state.zoom = Math.max(0.55, Math.min(2.2, state.zoom + (event.deltaY > 0 ? -0.08 : 0.08)));
@@ -860,7 +1145,9 @@ canvas.addEventListener("wheel", (event) => {
 
 window.addEventListener("resize", resizeCanvas);
 
+if (renderStyle) renderStyle.value = state.renderStyle;
 createDemoMap();
 syncTimelinePanControl();
+setViewMode(state.viewMode);
 resizeCanvas();
 animate();
