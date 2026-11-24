@@ -24,11 +24,40 @@ const APPEARANCE_DEFAULTS = {
 type AppearanceAttr = keyof typeof APPEARANCE_DEFAULTS
 type AppearanceState = Record<AppearanceAttr, string>
 
+function safeGet(key: string): string | null {
+  try {
+    return window.localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeSet(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value)
+  } catch {
+    // Storage is denied in srcDoc / sandboxed iframes (e.g. Framer embeds).
+  }
+}
+
+function safeRemove(key: string): void {
+  try {
+    window.localStorage.removeItem(key)
+  } catch {
+    // Ignore storage denial in srcDoc / sandboxed iframes.
+  }
+}
+
 function readStoredAppearance(): AppearanceState {
   const next = { ...APPEARANCE_DEFAULTS } as AppearanceState
   for (const attr of Object.keys(APPEARANCE_DEFAULTS) as AppearanceAttr[]) {
-    const saved = localStorage.getItem(`acoustic-${attr}`)
-    if (saved !== null) next[attr] = saved
+    const saved = safeGet(`acoustic-${attr}`)
+    if (saved !== null) {
+      next[attr] = saved
+    } else {
+      const rootAttr = document.documentElement.getAttribute(attr)
+      if (rootAttr !== null) next[attr] = rootAttr
+    }
   }
   return next
 }
@@ -84,20 +113,20 @@ function App() {
   useEffect(() => { if (settingsOpen) dialog.current?.showModal(); else dialog.current?.close() }, [settingsOpen])
 
   const updateAppearance = (attr: AppearanceAttr, value: string) => {
-    localStorage.setItem(`acoustic-${attr}`, value)
+    safeSet(`acoustic-${attr}`, value)
     setAppearance(current => ({ ...current, [attr]: value }))
   }
 
   const resetAppearance = () => {
     for (const attr of Object.keys(APPEARANCE_DEFAULTS) as AppearanceAttr[]) {
-      localStorage.removeItem(`acoustic-${attr}`)
+      safeRemove(`acoustic-${attr}`)
     }
     setAppearance({ ...APPEARANCE_DEFAULTS })
   }
 
   return <main className="app-shell">
     <header className="topbar" aria-label="Song analysis setup">
-      <div className="brand-block"><p className="eyebrow">Acoustic Matrix · v1.2.3</p><h1 className="brand-title" data-ba-component="Display">Song to 3D Map</h1></div>
+      <div className="brand-block"><p className="eyebrow">Acoustic Matrix · v1.2.4</p><h1 className="brand-title" data-ba-component="Display">Song to 3D Map</h1></div>
       <div className="source-bar" data-ba-component="Surface" data-ba-surface="default">
         <div className="upload-control"><input id="audio-file" type="file" accept="audio/*"/><Action className="upload-button" kind="primary" size="large" leadingIcon="upload" onClick={() => document.getElementById("audio-file")?.click()}>Upload audio</Action></div>
         <div className="link-field"><Field id="source-link" label="Link import contract" input="Paste a public audio/video URL" {...{ Label: false, "Leading Icon": true, "leading-icon": "link", "Tailing Icon": false, Button: false }} /></div>
@@ -119,7 +148,7 @@ function App() {
         <canvas id="matrix-canvas" width="1280" height="820"/><div className="legend" aria-label="Map legend"><span>Quiet</span><div className="legend-ramp"/><span>Loud</span></div>
       </section>
     </section>
-    <dialog className="appearance-dialog" ref={dialog} onClose={() => setSettingsOpen(false)}><div className="appearance-head"><h2>Appearance</h2><IconAction icon="close" size="small" title="Close settings" onClick={() => setSettingsOpen(false)}/></div><Setting label="Theme" value={appearance["data-theme"]} values={[["dark","Dark"],["light","Light"]]} onChange={v => updateAppearance("data-theme", v)}/><Setting label="Contrast" value={appearance["data-contrast"]} values={[["","Default"],["high","High"]]} onChange={v => updateAppearance("data-contrast", v)}/><Setting label="Temperature" value={appearance["data-temperature"]} values={[["warm","Warm"],["cool","Cool"]]} onChange={v => updateAppearance("data-temperature", v)}/><Setting label="Text size" value={appearance["data-text-scale"]} values={[["1","1x"],["1.2","1.2x"],["1.4","1.4x"]]} onChange={v => updateAppearance("data-text-scale", v)}/><Setting label="Screen size" value={appearance["data-screen"]} values={[["","Automatic"],["mobile","Mobile"],["tablet","Tablet"],["desktop","Desktop"]]} onChange={v => updateAppearance("data-screen", v)}/><div className="appearance-actions"><Action kind="ghost" size="small" onClick={resetAppearance}>Reset to default</Action></div><p className="section-copy appearance-version">Acoustic Matrix <strong>v1.2.3</strong> · <a href="https://github.com/shubhamarya-uxnai/music-composer/releases" target="_blank" rel="noopener noreferrer">Release history</a></p></dialog>
+    <dialog className="appearance-dialog" ref={dialog} onClose={() => setSettingsOpen(false)}><div className="appearance-head"><h2>Appearance</h2><IconAction icon="close" size="small" title="Close settings" onClick={() => setSettingsOpen(false)}/></div><Setting label="Theme" value={appearance["data-theme"]} values={[["dark","Dark"],["light","Light"]]} onChange={v => updateAppearance("data-theme", v)}/><Setting label="Contrast" value={appearance["data-contrast"]} values={[["","Default"],["high","High"]]} onChange={v => updateAppearance("data-contrast", v)}/><Setting label="Temperature" value={appearance["data-temperature"]} values={[["warm","Warm"],["cool","Cool"]]} onChange={v => updateAppearance("data-temperature", v)}/><Setting label="Text size" value={appearance["data-text-scale"]} values={[["1","1x"],["1.2","1.2x"],["1.4","1.4x"]]} onChange={v => updateAppearance("data-text-scale", v)}/><Setting label="Screen size" value={appearance["data-screen"]} values={[["","Automatic"],["mobile","Mobile"],["tablet","Tablet"],["desktop","Desktop"]]} onChange={v => updateAppearance("data-screen", v)}/><div className="appearance-actions"><Action kind="ghost" size="small" onClick={resetAppearance}>Reset to default</Action></div><p className="section-copy appearance-version">Acoustic Matrix <strong>v1.2.4</strong> · <a href="https://github.com/shubhamarya-uxnai/music-composer/releases" target="_blank" rel="noopener noreferrer">Release history</a></p></dialog>
   </main>
 }
 
